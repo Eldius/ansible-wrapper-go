@@ -30,6 +30,7 @@ func SetupPython(cfg *config.AppConfig) {
 	if runtime.GOOS == "linux" {
 		log.Println("Cloning pyenv...")
 		if repo, err := clone(pyenvRepo, cfg.GetPyenvFolder()); err != nil {
+			log.Println("Failed to install pyenv...")
 			log.Panic(err.Error())
 		} else {
 			repo.Fetch(&git.FetchOptions{
@@ -37,10 +38,12 @@ func SetupPython(cfg *config.AppConfig) {
 				Progress:   os.Stdout,
 			})
 		}
+		log.Println("Cloning pyenv-virtualenv...")
 		if repo, err := clone(
 			pyenvVirtualenvRepo,
 			filepath.Join(cfg.GetPyenvFolder(), "plugins", "pyenv-virtualenv"),
 		); err != nil {
+			log.Println("Failed to install pyenv-virtualenv...")
 			log.Panic(err.Error())
 		} else {
 			repo.Fetch(&git.FetchOptions{

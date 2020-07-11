@@ -67,7 +67,7 @@ GetAppConfig returns the app config
 */
 func GetAppConfig() *AppConfig {
 	var cfg AppConfig
-	if err := viper.Unmarshal(&cfg); err != nil {
+	if err := viper.UnmarshalKey("ansible", &cfg); err != nil {
 		log.Panic(err.Error())
 	}
 

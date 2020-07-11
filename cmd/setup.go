@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"bitbucket.com/Eldius/ansible-wrapper-go/config"
 	"bitbucket.com/Eldius/ansible-wrapper-go/python"
@@ -19,7 +19,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("setup called")
+		log.Println("setup called")
 		python.SetupPython(config.GetAppConfig())
 	},
 }
