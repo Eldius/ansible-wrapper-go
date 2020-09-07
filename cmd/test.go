@@ -36,8 +36,10 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("test called")
 		cfg := config.GetAppConfig()
+		log.Println(cfg)
 		// command string, args []string, path string, cfg *config.AppConfig
-		command.ExecutePyenvCmd(args, cfg)
+		//command.ExecutePyenvCmd(args, cfg)
+		command.ExecuteScript(command.ExecuteAnsiblePlaybook, *cfg)
 	},
 }
 

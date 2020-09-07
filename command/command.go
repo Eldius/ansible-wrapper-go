@@ -5,11 +5,13 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
+
+	//"path/filepath"
 	"strings"
 
 	"bitbucket.com/Eldius/ansible-wrapper-go/config"
 	"bitbucket.com/Eldius/ansible-wrapper-go/logger"
+	//"bitbucket.com/Eldius/ansible-wrapper-go/logger"
 )
 
 /*
@@ -30,27 +32,29 @@ func GetCommandExecutionEnvVars(cfg *config.AppConfig) []string {
 ExecuteWithEnv executes a command
 */
 func ExecuteWithEnv(command string, execArgs []string, cfg *config.AppConfig, path string, env []string)  {
-	path, err := filepath.Abs("./command/files/source.sh")
-	if err != nil {
-		log.Println("Failed to parse source file path")
-		log.Println(err.Error())
-		return
-	}
-	extraFile, err := os.Open(path)
-	if err != nil {
-		log.Println("Failed to opem source file")
-		log.Println(err.Error())
-		return
-	}
+	// path, err := filepath.Abs("./command/files/source.sh")
+	// if err != nil {
+	// 	log.Println("Failed to parse source file path")
+	// 	log.Println(err.Error())
+	// 	return
+	// }
+	// cmd := &exec.Cmd{
+	// 	Path: path,
+	// 	Args: execArgs,
+	// 	Env:  env,
+	// 	Stdout: os.Stdout,
+	// 	Stderr: os.Stderr,
+	// 	Dir: cfg.Workspace,
+	// }
+
 	l := logger.NewLogWriter(logger.DefaultLogger())
 	cmd := &exec.Cmd{
-		Path: path,
+		Path: command,
 		Args: execArgs,
 		Env:  env,
 		Stdout: l,
 		Stderr: l,
-		Dir: cfg.Workspace,
-		ExtraFiles: []*os.File{extraFile},
+		Dir: path,
 	}
 
 	if err := cmd.Run(); err != nil {
@@ -59,7 +63,8 @@ func ExecuteWithEnv(command string, execArgs []string, cfg *config.AppConfig, pa
 		return
 	}
 	log.Println("Command finished with success.")
-	cmd.Wait()
+	//cmd.Wait()
+	return
 }
 
 /*
@@ -85,4 +90,18 @@ func ExecutePyenvCmd(args []string, cfg *config.AppConfig)  {
 	execArgs := []string{"pyenv"}
 	execArgs = append(execArgs, args...)
 	ExecuteWithEnv(cfg.GetPyenvBinFolder() + "/pyenv", execArgs, cfg, cfg.GetPyenvBinFolder(), GetCommandExecutionEnvVars(cfg))
+}
+
+/*
+ExecuteScript executes an ansible playbook
+*/
+func ExecuteScript(s ScriptTemplate, cfg config.AppConfig)  {
+	if tmp, err := RenderTemplate(ExecuteAnsiblePlaybook); err == nil {
+		_ = tmp.Close()
+		ExecuteWithEnv("/bin/bash", []string{"/bin/bash", "-c", tmp.Name()}, &cfg, cfg.WorkspaceFolder(), GetCommandExecutionEnvVars(&cfg))
+		log.Println(tmp.Name())
+	} else {
+		log.Println("Failed to execute script...")
+		log.Panic(err.Error())
+	}
 }
