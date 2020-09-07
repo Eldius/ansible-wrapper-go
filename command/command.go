@@ -6,12 +6,8 @@ import (
 	"os"
 	"os/exec"
 
-	//"path/filepath"
-	"strings"
-
 	"bitbucket.com/Eldius/ansible-wrapper-go/config"
 	"bitbucket.com/Eldius/ansible-wrapper-go/logger"
-	//"bitbucket.com/Eldius/ansible-wrapper-go/logger"
 )
 
 /*
@@ -31,30 +27,15 @@ func GetCommandExecutionEnvVars(cfg *config.AppConfig) []string {
 /*
 ExecuteWithEnv executes a command
 */
-func ExecuteWithEnv(command string, execArgs []string, cfg *config.AppConfig, path string, env []string)  {
-	// path, err := filepath.Abs("./command/files/source.sh")
-	// if err != nil {
-	// 	log.Println("Failed to parse source file path")
-	// 	log.Println(err.Error())
-	// 	return
-	// }
-	// cmd := &exec.Cmd{
-	// 	Path: path,
-	// 	Args: execArgs,
-	// 	Env:  env,
-	// 	Stdout: os.Stdout,
-	// 	Stderr: os.Stderr,
-	// 	Dir: cfg.Workspace,
-	// }
-
+func ExecuteWithEnv(command string, execArgs []string, cfg *config.AppConfig, path string, env []string) {
 	l := logger.NewLogWriter(logger.DefaultLogger())
 	cmd := &exec.Cmd{
-		Path: command,
-		Args: execArgs,
-		Env:  env,
+		Path:   command,
+		Args:   execArgs,
+		Env:    env,
 		Stdout: l,
 		Stderr: l,
-		Dir: path,
+		Dir:    path,
 	}
 
 	if err := cmd.Run(); err != nil {
@@ -68,35 +49,13 @@ func ExecuteWithEnv(command string, execArgs []string, cfg *config.AppConfig, pa
 }
 
 /*
-Execute executes a command
-*/
-func Execute(command string, path string, cfg *config.AppConfig)  {
-	ExecuteWithEnv(command, []string{}, cfg, path, GetCommandExecutionEnvVars(cfg))
-}
-
-/*
-ExecuteWithArgs executes a command with args
-*/
-func ExecuteWithArgs(command string, args []string, path string, cfg *config.AppConfig)  {
-	log.Println("executing:", command, args, "at", path)
-	ExecuteWithEnv(command, args, cfg, path, GetCommandExecutionEnvVars(cfg))
-}
-
-/*
-ExecutePyenvCmd executes a command with args
-*/
-func ExecutePyenvCmd(args []string, cfg *config.AppConfig)  {
-	log.Println("executing: pyenv", strings.Join(args, " "))
-	execArgs := []string{"pyenv"}
-	execArgs = append(execArgs, args...)
-	ExecuteWithEnv(cfg.GetPyenvBinFolder() + "/pyenv", execArgs, cfg, cfg.GetPyenvBinFolder(), GetCommandExecutionEnvVars(cfg))
-}
-
-/*
 ExecuteScript executes an ansible playbook
 */
-func ExecuteScript(s ScriptTemplate, cfg config.AppConfig)  {
-	if tmp, err := RenderTemplate(ExecuteAnsiblePlaybook); err == nil {
+func ExecuteScript(s ScriptTemplate, cfg config.AppConfig) {
+	if tmp, err := RenderTemplate(s, PlaybookParams{
+		Name: "test.yml",
+		Workspace: cfg.WorkspaceFolder(),
+	}); err == nil {
 		_ = tmp.Close()
 		ExecuteWithEnv("/bin/bash", []string{"/bin/bash", "-c", tmp.Name()}, &cfg, cfg.WorkspaceFolder(), GetCommandExecutionEnvVars(&cfg))
 		log.Println(tmp.Name())
