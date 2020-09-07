@@ -18,7 +18,7 @@ type ScriptTemplate string
 const (
 	// ExecuteAnsiblePlaybook ansible script
 	ExecuteAnsiblePlaybook ScriptTemplate = "ansible/execute_playbook.sh"
-	// SetypePythonEnv setup Python and Ansible
+	// SetupPythonEnv setup Python and Ansible
 	SetupPythonEnv ScriptTemplate = "ansible/setup_python_env.sh"
 )
 
