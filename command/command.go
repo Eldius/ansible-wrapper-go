@@ -17,7 +17,7 @@ commands
 func GetCommandExecutionEnvVars(cfg *config.AppConfig) []string {
 	sysPath, _ := os.LookupEnv("PATH")
 	newPath := fmt.Sprintf("PATH=%s:%s", cfg.GetPyenvBinFolder(), sysPath)
-	workspace := cfg.Workspace
+	workspace := cfg.WorkspaceFolder()
 	newUserHome := fmt.Sprintf("HOME=%s", workspace)
 	pyenvRoot := fmt.Sprintf("PYENV_ROOT=%s/pyenv", workspace)
 
