@@ -1,0 +1,3 @@
+tasks:
+  - init: pyenv install 3.8.0 && pyenv virtualenv 3.8.0 ansible-wrapper-go && go get -v && go test ./...
+    command: echo "Begin!"
